@@ -1,0 +1,27 @@
+Start time: 2025-05-15 14:10:03
+Exporting graph with label 'EmailEuCore' to Neo4j...
+Graph with label 'EmailEuCore' exported to Neo4j successfully!
+Removed 0 edges with weight below 0.1.
+Removed 0 isolated nodes.
+Removed 18 outlier nodes with degree z-score above 3.0.
+No unique attributes specified for duplicate nodes removal.
+Feature selection completed: kept selected node and edge attributes only.
+Feature extraction completed: added degree and betweenness centrality.
+Sampled 888 nodes out of 987. Removed 99 nodes.
+Starting Louvain algorithm...
+=======================================================
+Time taken for Louvain: 0 hours, 8 minutes, 28.4318 seconds
+=======================================================
+Starting Leiden algorithm...
+=======================================================
+Time taken for Leiden: 0 hours, 8 minutes, 19.9102 seconds
+=======================================================
+Normalized Mutual Information (NMI) for Louvain: 0.4998
+Normalized Mutual Information (NMI) for Leiden: 0.5380
+Exporting graph with label 'LouvainNode' to Neo4j...
+Graph with label 'LouvainNode' exported to Neo4j successfully!
+Exporting graph with label 'LeidenNode' to Neo4j...
+Graph with label 'LeidenNode' exported to Neo4j successfully!
+=======================================================
+Total time for Email EU Core Network: 0 hours, 18 minutes, 51.6406 seconds
+=======================================================

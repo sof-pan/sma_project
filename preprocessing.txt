@@ -1,0 +1,53 @@
+i) Noise (Distortion of Data)
+In Graphs: Noise would typically be:
+
+Spurious edges (wrong links, very low weight).
+
+Incorrect node attributes.
+
+With NetworkX:
+
+You can detect edges with anomalously low weights (potential noise).
+
+You can verify attribute ranges for nodes/edges.
+
+Manual rules for noise detection (e.g., edges that shouldn't exist based on domain knowledge).
+
+ii) Outliers (Very Different Instances)
+In Graphs: Outliers are:
+
+Nodes with unusually high/low degree.
+
+Nodes with unusual centrality metrics (degree, betweenness, closeness, etc.).
+
+With NetworkX:
+
+Compute degree distribution, centrality scores.
+
+Detect nodes in extreme percentiles (top 1% degree, isolated nodes, etc.).
+
+iii) Missing Values
+In Graphs: Missing data means:
+
+Nodes/edges missing expected attributes (like 'weight', 'type', etc.).
+
+With NetworkX:
+
+Iterate through nodes/edges to check for missing attributes.
+
+Fill defaults (e.g., weight = 1).
+
+iv) Duplicates
+In Graphs: Duplicates could be:
+
+Duplicate edges (MultiGraph can handle, but can be deduplicated if needed).
+
+Duplicate nodes (less common in graphs since IDs are unique, but possible in imported data).
+
+With NetworkX:
+
+Can check for parallel edges in MultiGraphs.
+
+Deduplicate edges if needed.
+
+Validate unique node identifiers.
