@@ -92,74 +92,77 @@ for node, comm_id in pred_partition_dict.items():
 evaluation.evaluate_communities_without_ground_truth(brain_graph_processed, partition_louvain, "Louvain")
 # evaluation.evaluate_communities_without_ground_truth(brain_graph_processed, pred_partition_dict, "Leiden")
 
+evaluation.evaluate_cpm(brain_graph_processed, partition_louvain, gamma=0.2, method="Louvain")
+evaluation.evaluate_cpm(brain_graph_processed, pred_partition_dict, gamma=0.2, method="Leiden")
+
 # ---------------- Neo4j Export ---------------- #
-uri = "bolt://localhost:7687"
-user = "neo4j"
-password = "test1234"
-driver = GraphDatabase.driver(uri, auth=(user, password))
+# uri = "bolt://localhost:7687"
+# user = "neo4j"
+# password = "test1234"
+# driver = GraphDatabase.driver(uri, auth=(user, password))
 
-with driver.session() as session:
-    session.run("MATCH (n) DETACH DELETE n")
+# with driver.session() as session:
+#     session.run("MATCH (n) DETACH DELETE n")
 
-    # Export Louvain nodes
-    for node, data in brain_graph_processed.nodes(data=True):
-        session.run(
-            """
-            CREATE (n:NeuronLouvain {
-                id: $id,
-                degree_centrality: $dc,
-                betweenness_centrality: $bc,
-                community: $community,
-                community_members: $community_members
-            })
-            """,
-            {
-                "id": node,
-                "dc": data.get("degree_centrality"),
-                "bc": data.get("betweenness_centrality"),
-                "community": data.get("louvain_community"),
-                "community_members": data.get("louvain_community_members")
-            }
-        )
+#     # Export Louvain nodes
+#     for node, data in brain_graph_processed.nodes(data=True):
+#         session.run(
+#             """
+#             CREATE (n:NeuronLouvain {
+#                 id: $id,
+#                 degree_centrality: $dc,
+#                 betweenness_centrality: $bc,
+#                 community: $community,
+#                 community_members: $community_members
+#             })
+#             """,
+#             {
+#                 "id": node,
+#                 "dc": data.get("degree_centrality"),
+#                 "bc": data.get("betweenness_centrality"),
+#                 "community": data.get("louvain_community"),
+#                 "community_members": data.get("louvain_community_members")
+#             }
+#         )
 
-    # Export Leiden nodes
-    for node, data in brain_graph_processed.nodes(data=True):
-        session.run(
-            """
-            CREATE (n:NeuronLeiden {
-                id: $id,
-                degree_centrality: $dc,
-                betweenness_centrality: $bc,
-                community: $community,
-                community_members: $community_members
-            })
-            """,
-            {
-                "id": node,
-                "dc": data.get("degree_centrality"),
-                "bc": data.get("betweenness_centrality"),
-                "community": data.get("leiden_community"),
-                "community_members": data.get("leiden_community_members")
-            }
-        )
+#     # Export Leiden nodes
+#     for node, data in brain_graph_processed.nodes(data=True):
+#         session.run(
+#             """
+#             CREATE (n:NeuronLeiden {
+#                 id: $id,
+#                 degree_centrality: $dc,
+#                 betweenness_centrality: $bc,
+#                 community: $community,
+#                 community_members: $community_members
+#             })
+#             """,
+#             {
+#                 "id": node,
+#                 "dc": data.get("degree_centrality"),
+#                 "bc": data.get("betweenness_centrality"),
+#                 "community": data.get("leiden_community"),
+#                 "community_members": data.get("leiden_community_members")
+#             }
+#         )
 
-    # Export edges for both
-    for u, v, data in brain_graph_processed.edges(data=True):
-        session.run(
-            """
-            MATCH (aL:NeuronLouvain {id: $source}), (bL:NeuronLouvain {id: $target}),
-                  (aLe:NeuronLeiden {id: $source}), (bLe:NeuronLeiden {id: $target})
-            CREATE (aL)-[:CONNECTS {weight: $weight}]->(bL),
-                   (aLe)-[:CONNECTS {weight: $weight}]->(bLe)
-            """,
-            {
-                "source": u,
-                "target": v,
-                "weight": data.get("weight", 1)
-            }
-        )
+#     # Export edges for both
+#     for u, v, data in brain_graph_processed.edges(data=True):
+#         session.run(
+#             """
+#             MATCH (aL:NeuronLouvain {id: $source}), (bL:NeuronLouvain {id: $target}),
+#                   (aLe:NeuronLeiden {id: $source}), (bLe:NeuronLeiden {id: $target})
+#             CREATE (aL)-[:CONNECTS {weight: $weight}]->(bL),
+#                    (aLe)-[:CONNECTS {weight: $weight}]->(bLe)
+#             """,
+#             {
+#                 "source": u,
+#                 "target": v,
+#                 "weight": data.get("weight", 1)
+#             }
+#         )
 
-driver.close()
+# driver.close()
 
 # ---------------- Done ---------------- #
 end_time = time.time()

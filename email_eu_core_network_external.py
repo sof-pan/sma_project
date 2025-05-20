@@ -106,79 +106,82 @@ for node, comm_id in pred_partition_dict.items():
 evaluation.evaluate_communities_with_ground_truth(partition_louvain, node_labels, "Louvain")
 evaluation.evaluate_communities_with_ground_truth(pred_partition_dict, node_labels, "Leiden")
 
+evaluation.evaluate_cpm(email_eu_graph_processed, partition_louvain, gamma=0.1, method="Louvain")
+evaluation.evaluate_cpm(email_eu_graph_processed, pred_partition_dict, gamma=0.1, method="Leiden")
+
 # Configure Neo4j connection
-uri = "bolt://localhost:7687"
-user = "neo4j"
-password = "test1234"
+# uri = "bolt://localhost:7687"
+# user = "neo4j"
+# password = "test1234"
 
-driver = GraphDatabase.driver(uri, auth=(user, password))
+# driver = GraphDatabase.driver(uri, auth=(user, password))
 
-with driver.session() as session:
-    session.run("MATCH (n) DETACH DELETE n")
+# with driver.session() as session:
+#     session.run("MATCH (n) DETACH DELETE n")
 
-    # Export Louvain nodes
-    for node, data in email_eu_graph_processed.nodes(data=True):
-        session.run(
-            """
-            CREATE (n:PersonLouvain {
-                id: $id,
-                department: $department,
-                degree_centrality: $dc,
-                betweenness_centrality: $bc,
-                community: $community,
-                community_members: $community_members
-            })
-            """,
-            {
-                "id": node,
-                "department": data.get("department"),
-                "dc": data.get("degree_centrality"),
-                "bc": data.get("betweenness_centrality"),
-                "community": data.get("louvain_community"),
-                "community_members": data.get("louvain_community_members")
-            }
-        )
+#     # Export Louvain nodes
+#     for node, data in email_eu_graph_processed.nodes(data=True):
+#         session.run(
+#             """
+#             CREATE (n:PersonLouvain {
+#                 id: $id,
+#                 department: $department,
+#                 degree_centrality: $dc,
+#                 betweenness_centrality: $bc,
+#                 community: $community,
+#                 community_members: $community_members
+#             })
+#             """,
+#             {
+#                 "id": node,
+#                 "department": data.get("department"),
+#                 "dc": data.get("degree_centrality"),
+#                 "bc": data.get("betweenness_centrality"),
+#                 "community": data.get("louvain_community"),
+#                 "community_members": data.get("louvain_community_members")
+#             }
+#         )
 
-    # Export Leiden nodes
-    for node, data in email_eu_graph_processed.nodes(data=True):
-        session.run(
-            """
-            CREATE (n:PersonLeiden {
-                id: $id,
-                department: $department,
-                degree_centrality: $dc,
-                betweenness_centrality: $bc,
-                community: $community,
-                community_members: $community_members
-            })
-            """,
-            {
-                "id": node,
-                "department": data.get("department"),
-                "dc": data.get("degree_centrality"),
-                "bc": data.get("betweenness_centrality"),
-                "community": data.get("leiden_community"),
-                "community_members": data.get("leiden_community_members")
-            }
-        )
+#     # Export Leiden nodes
+#     for node, data in email_eu_graph_processed.nodes(data=True):
+#         session.run(
+#             """
+#             CREATE (n:PersonLeiden {
+#                 id: $id,
+#                 department: $department,
+#                 degree_centrality: $dc,
+#                 betweenness_centrality: $bc,
+#                 community: $community,
+#                 community_members: $community_members
+#             })
+#             """,
+#             {
+#                 "id": node,
+#                 "department": data.get("department"),
+#                 "dc": data.get("degree_centrality"),
+#                 "bc": data.get("betweenness_centrality"),
+#                 "community": data.get("leiden_community"),
+#                 "community_members": data.get("leiden_community_members")
+#             }
+#         )
 
-    # Export edges (shared for both)
-    for u, v, data in email_eu_graph_processed.edges(data=True):
-        session.run(
-            """
-            MATCH (aL:PersonLouvain {id: $source}), (bL:PersonLouvain {id: $target}),
-                    (aLe:PersonLeiden {id: $source}), (bLe:PersonLeiden {id: $target})
-            CREATE (aL)-[:EMAIL {weight: $weight}]->(bL),
-                    (aLe)-[:EMAIL {weight: $weight}]->(bLe)
-            """,
-            {
-                "source": u,
-                "target": v,
-                "weight": data.get("weight", 1)
-            }
-        )
+#     # Export edges (shared for both)
+#     for u, v, data in email_eu_graph_processed.edges(data=True):
+#         session.run(
+#             """
+#             MATCH (aL:PersonLouvain {id: $source}), (bL:PersonLouvain {id: $target}),
+#                     (aLe:PersonLeiden {id: $source}), (bLe:PersonLeiden {id: $target})
+#             CREATE (aL)-[:EMAIL {weight: $weight}]->(bL),
+#                     (aLe)-[:EMAIL {weight: $weight}]->(bLe)
+#             """,
+#             {
+#                 "source": u,
+#                 "target": v,
+#                 "weight": data.get("weight", 1)
+#             }
+#         )
 
-driver.close()
+# driver.close()
 
 end_time = time.time()
 elapsed_time = end_time - start_time

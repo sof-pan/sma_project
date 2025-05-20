@@ -1,0 +1,23 @@
+Start time: 2025-05-20 21:11:18
+Removed 0 edges with weight below 0.1.
+Removed 0 isolated nodes.
+Removed 18 outlier nodes with degree z-score above 3.0.
+No unique attributes specified for duplicate nodes removal.
+Feature selection completed: kept selected node and edge attributes only.
+Feature extraction completed: added degree and betweenness centrality.
+Sampled 888 nodes out of 987. Removed 99 nodes.
+Starting Louvain algorithm...
+=======================================================
+Time taken for Louvain: 0 hours, 7 minutes, 27.3332 seconds
+=======================================================
+Starting Leiden algorithm...
+=======================================================
+Time taken for Leiden: 0 hours, 7 minutes, 23.6363 seconds
+=======================================================
+Normalized Mutual Information (NMI) for Louvain: 0.5030
+Normalized Mutual Information (NMI) for Leiden: 0.5195
+CPM Score (gamma=0.1) for Louvain: 1048.8000
+CPM Score (gamma=0.1) for Leiden: 1355.2000
+=======================================================
+Total time for Email EU Core Network: 0 hours, 14 minutes, 53.2479 seconds
+=======================================================

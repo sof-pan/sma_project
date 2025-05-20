@@ -1,0 +1,29 @@
+Start time: 2025-05-20 21:34:26
+Removed 0 edges with weight below 0.1.
+Removed 0 isolated nodes.
+Removed 14 outlier nodes with degree z-score above 3.0.
+No attributes specified for node missing values removal.
+No attributes specified for edge missing values removal.
+No unique attributes specified for duplicate nodes removal.
+No selected node attributes specified for feature selection.
+No selected edge attributes specified for feature selection.
+Feature selection completed: kept selected node and edge attributes only.
+Feature extraction completed: added degree and betweenness centrality.
+Sampled 1590 nodes out of 1767. Removed 177 nodes.
+Starting Louvain algorithm...
+=======================================================
+Time taken for Louvain: 0 hours, 35 minutes, 58.2685 seconds
+=======================================================
+Starting Leiden algorithm...
+=======================================================
+Time taken for Leiden: 0 hours, 35 minutes, 45.6219 seconds
+=======================================================
+Cohesiveness for Louvain: 0.0028
+Separateness for Louvain: 0.1585
+Cohesiveness for Leiden: 0.0000
+Separateness for Leiden: 0.1835
+CPM Score (gamma=0.2) for Louvain: -24298.4000
+CPM Score (gamma=0.2) for Leiden: -21207.4000
+=======================================================
+Total time for Brain Network: 1 hours, 11 minutes, 47.7589 seconds
+=======================================================

@@ -1,0 +1,20 @@
+Removed 0 edges with weight below 0.1.
+Removed 0 isolated nodes.
+Removed 18 outlier nodes with degree z-score above 3.0.
+No unique attributes specified for duplicate nodes removal.
+Feature selection completed: kept selected node and edge attributes only.
+Feature extraction completed: added degree and betweenness centrality.
+Sampled 888 nodes out of 987. Removed 99 nodes.
+=======================================================
+Brain Network Louvain Time: 0h 0m 0.05s
+=======================================================
+=======================================================
+Brain Network Leiden Time: 0h 0m 0.02s
+=======================================================
+Normalized Mutual Information (NMI) for Louvain: 0.5286
+Normalized Mutual Information (NMI) for Leiden: 0.0978
+CPM Score (gamma=0.1) for Louvain: 1833.6000
+CPM Score (gamma=0.1) for Leiden: -3518.6000
+=======================================================
+Total time for Email EU Core Network: 0 hours, 0 minutes, 2.4355 seconds
+=======================================================

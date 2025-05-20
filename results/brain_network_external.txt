@@ -1,0 +1,26 @@
+C:\Users\mario\Desktop\sma\comm\brain_network_external.py:27: FutureWarning: The 'delim_whitespace' keyword in pd.read_csv is deprecated and will be removed in a future version. Use ``sep='\s+'`` instead
+  brain_df = pd.read_csv('datasets/bn-fly-drosophila_medulla_1.edges', delim_whitespace=True, comment='#', header=None, names=['source', 'target', 'weight'])
+Removed 0 edges with weight below 0.1.
+Removed 0 isolated nodes.
+Removed 14 outlier nodes with degree z-score above 3.0.
+No attributes specified for node missing values removal.
+No attributes specified for edge missing values removal.
+No unique attributes specified for duplicate nodes removal.
+No selected node attributes specified for feature selection.
+No selected edge attributes specified for feature selection.
+Feature selection completed: kept selected node and edge attributes only.
+Feature extraction completed: added degree and betweenness centrality.
+Sampled 1590 nodes out of 1767. Removed 177 nodes.
+=======================================================
+Brain Network Louvain Time: 0h 0m 0.09s
+=======================================================
+=======================================================
+Brain Network Leiden Time: 0h 0m 0.02s
+=======================================================
+Cohesiveness for Louvain: 0.0076
+Separateness for Louvain: 0.0895
+CPM Score (gamma=0.1) for Louvain: -10899.6000
+CPM Score (gamma=0.1) for Leiden: -14281.3000
+=======================================================
+Brain Network Total Time: 0h 0m 3.99s
+=======================================================

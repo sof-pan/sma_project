@@ -100,3 +100,22 @@ def evaluate_communities_without_ground_truth(G: nx.Graph, partition, method):
     print(f"Separateness for {method}: {separateness:.4f}")
     
     return cohesiveness, separateness
+
+# For smaller graphs with fewer communities, use a lower gamma value
+def evaluate_cpm(G: nx.Graph, partition: dict, gamma: float = 0.5, method: str = "Unknown"):
+    # Keep track of total CPM score
+    Q = 0.0
+
+    # Group nodes by community
+    community_dict = {}
+    for node, comm in partition.items():
+        community_dict.setdefault(comm, []).append(node)
+
+    for nodes in community_dict.values():
+        subgraph = G.subgraph(nodes)
+        internal_weight = sum(data.get('weight', 1) for _, _, data in subgraph.edges(data=True))
+        n = len(nodes)
+        Q += internal_weight - gamma * n * (n - 1) / 2  # num possible internal edges in undirected graph
+
+    print(f"CPM Score (gamma={gamma}) for {method}: {Q:.4f}")
+    return Q

@@ -73,6 +73,9 @@ leiden_original_G, leiden_G, leiden_partition, leiden_final_partition = leiden.r
 evaluation.evaluate_communities_with_ground_truth(louvain_final_partition, node_labels, "Louvain")
 evaluation.evaluate_communities_with_ground_truth(leiden_final_partition, node_labels, "Leiden")
 
+evaluation.evaluate_cpm(email_eu_graph_processed, louvain_final_partition, "Louvain")
+evaluation.evaluate_cpm(email_eu_graph_processed, leiden_final_partition, "Leiden")
+
 if args.export_graphs:
     louvain_exporter = Neo4jGraphExporter(label="LouvainNode")
     louvain_exporter.export_graph(louvain_G, louvain_original_G, community_dict=louvain_final_partition, original_nodes=louvain.original_nodes)
