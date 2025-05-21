@@ -1,13 +1,22 @@
 # Run Louvain and Leiden algorithms on selected datasets V2.00  
 
-## Install necessary libraries Using Conda
+## Prerequisites 
 
-Install Miniconda [here] (https://www.anaconda.com/docs/getting-started/miniconda/install)
+### Install necessary libraries Using Conda
+
+[Install Miniconda] (https://www.anaconda.com/docs/getting-started/miniconda/install)
 
 Run `conda env create -f environment.yml
 conda activate envSMA
 `
+###install Neo4j 
+[possible via docker] (https://docs.docker.com/get-started/)
 
+Run `docker run -d --name neo4j-test \
+  -p7474:7474 -p7687:7687 \
+  -e NEO4J_AUTH=neo4j/test1234 \
+  neo4j:latest
+`
 
 ## Email EU Core Network
 
