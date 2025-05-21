@@ -1,4 +1,4 @@
-# Run Louvain and Leiden algorithms on selected datasets
+# Run Louvain and Leiden algorithms on selected datasets V2.00
 
 ## Install necessary libraries
 
