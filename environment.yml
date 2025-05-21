@@ -1,0 +1,19 @@
+name: envSMA
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - networkx
+  - pip
+  - pip:
+    - community
+    - python-louvain
+    - igraph
+    - leidenalg
+    - neo4j
+

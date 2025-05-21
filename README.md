@@ -1,8 +1,13 @@
 # Run Louvain and Leiden algorithms on selected datasets V2.00  
 
-## Install necessary libraries
+## Install necessary libraries Using Conda
 
-Run `pip install -r requirements.txt`
+Install Miniconda [here] (https://www.anaconda.com/docs/getting-started/miniconda/install)
+
+Run `conda env create -f environment.yml
+conda activate envSMA
+`
+
 
 ## Email EU Core Network
 

@@ -1,8 +1,0 @@
-networkx
-pandas
-numpy
-scikit-learn
-neo4j
-community
-igraph
-leidenalg
