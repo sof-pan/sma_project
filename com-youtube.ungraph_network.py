@@ -25,8 +25,8 @@ args = parser.parse_args()
 print("Start time:", time.strftime("%Y-%m-%d %H:%M:%S"))
 start_time = time.time()
 
-# Load the graph structure from edge list [delim_whitespace=True : detecte automatically separator]
-dataSet_df = pd.read_csv('datasets/com-youtube.ungraph.txt', delim_whitespace=True, comment='#', header=None, names=['source', 'target', 'weight'])
+# Load the graph structure from edge list [sep =detecte automatically separator]
+dataSet_df = pd.read_csv('datasets/com-youtube.ungraph.txt', sep='\s+', comment='#', header=None, names=['source', 'target', 'weight'])
 
 # Take only a part of the graph for test proposal 
 dataSet_df = dataSet_df.sample(n=100, random_state=42)
