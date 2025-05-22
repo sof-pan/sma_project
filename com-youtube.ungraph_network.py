@@ -12,7 +12,7 @@ import sys
 import os
 
 timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
-log_dir = os.path.join('logs', f"brain_network_{timestamp}")
+log_dir = os.path.join('logs', f"youtube_network_{timestamp}")
 os.makedirs(log_dir, exist_ok=True)
 log_file_path = os.path.join(log_dir, 'output.txt')
 sys.stdout = open(log_file_path, 'w')
@@ -27,6 +27,10 @@ start_time = time.time()
 
 # Load the graph structure from edge list [delim_whitespace=True : detecte automatically separator]
 dataSet_df = pd.read_csv('datasets/com-youtube.ungraph.txt', delim_whitespace=True, comment='#', header=None, names=['source', 'target', 'weight'])
+
+# Take only a part of the graph for test proposal 
+dataSet_df = dataSet_df.sample(n=100, random_state=42)
+
 the_graph: nx.Graph = nx.from_pandas_edgelist(dataSet_df, 'source', 'target', edge_attr='weight')
 
 # Add weight to edges if it's not already there
@@ -48,19 +52,19 @@ processor = GraphPreprocessor(
     sample_fraction=0.9
 )
 
-brain_graph_processed = processor.process()
+the_graph_processed = processor.process()
 
-louvain = Lvn(brain_graph_processed)
+louvain = Lvn(the_graph_processed)
 louvain_original_G, louvain_G, louvain_partition, louvain_final_partition = louvain.run(print_results=False)
 
-leiden = Ldn(brain_graph_processed)
+leiden = Ldn(the_graph_processed)
 leiden_original_G, leiden_G, leiden_partition, leiden_final_partition = leiden.run(print_results=False)
 
 evaluation.evaluate_communities_without_ground_truth(louvain_G, louvain_final_partition, "Louvain")
 evaluation.evaluate_communities_without_ground_truth(leiden_G, leiden_partition, "Leiden")
 
-evaluation.evaluate_cpm(brain_graph_processed, louvain_final_partition, "Louvain")
-evaluation.evaluate_cpm(brain_graph_processed, leiden_final_partition, "Leiden")
+evaluation.evaluate_cpm(the_graph_processed, louvain_final_partition, "Louvain")
+evaluation.evaluate_cpm(the_graph_processed, leiden_final_partition, "Leiden")
 
 if args.export_graphs:
     louvain_exporter = Neo4jGraphExporter(label="LouvainNode")
