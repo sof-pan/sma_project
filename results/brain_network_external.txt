@@ -10,15 +10,17 @@ Feature selection completed: kept selected node and edge attributes only.
 Feature extraction completed: added degree and betweenness centrality.
 Sampled 1590 nodes out of 1767. Removed 177 nodes.
 =======================================================
-Brain Network Louvain Time: 0h 0m 0.09s
+Brain Network Louvain Time: 0h 0m 0.10s
 =======================================================
 =======================================================
 Brain Network Leiden Time: 0h 0m 0.02s
 =======================================================
-Cohesiveness for Louvain: 0.0076
-Separateness for Louvain: 0.0895
-CPM Score (gamma=0.1) for Louvain: -10899.6000
-CPM Score (gamma=0.1) for Leiden: -14281.3000
+Cohesiveness for Louvain: 0.0079
+Separateness for Louvain: 0.0924
+Cohesiveness for Leiden: 0.0643
+Separateness for Leiden: 0.0453
+CPM Score (gamma=0.1) for Louvain: -13167.8000
+CPM Score (gamma=0.1) for Leiden: -13617.0000
 =======================================================
-Brain Network Total Time: 0h 0m 3.99s
+Brain Network Total Time: 0h 0m 4.06s
 =======================================================

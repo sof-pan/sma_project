@@ -57,7 +57,8 @@ def evaluate_communities_without_ground_truth(G: nx.Graph, partition, method):
     # get labels for each node from partition
     labels = []
     for n in G.nodes():
-        labels.append(partition[n])
+        if n in partition:
+            labels.append(partition[n])
     
     # compute unique community IDs
     communities = set(labels)

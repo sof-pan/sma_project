@@ -90,7 +90,7 @@ for node, comm_id in pred_partition_dict.items():
 
 # ---------------- Evaluation ---------------- #
 evaluation.evaluate_communities_without_ground_truth(brain_graph_processed, partition_louvain, "Louvain")
-# evaluation.evaluate_communities_without_ground_truth(brain_graph_processed, pred_partition_dict, "Leiden")
+evaluation.evaluate_communities_without_ground_truth(brain_graph_processed, pred_partition_dict, "Leiden")
 
 evaluation.evaluate_cpm(brain_graph_processed, partition_louvain, gamma=0.2, method="Louvain")
 evaluation.evaluate_cpm(brain_graph_processed, pred_partition_dict, gamma=0.2, method="Leiden")
