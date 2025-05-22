@@ -7,6 +7,7 @@ import evaluation
 from preprocessing import GraphPreprocessor
 import igraph as ig
 import leidenalg
+import time
 
 # Load sample graph with ground truth (karate club)
 G: nx.Graph = nx.karate_club_graph()
@@ -21,7 +22,14 @@ for node in G.nodes():
 processed_graph = GraphPreprocessor(G, z_threshold=5).process()
 
 # --- Louvain from NetworkX
+start_time = time.time()
 partition_louvain = community_louvain.best_partition(processed_graph)
+end_time = time.time()
+elapsed = end_time - start_time
+print("=======================================================")
+print(f"Karate Club Network Louvain Networkx Time: {int(elapsed // 3600)}h {int((elapsed % 3600) // 60)}m {elapsed % 60:.4f}s")
+print("=======================================================")
+community_nodes_louvain = defaultdict(list)
 louvain = Lvn(processed_graph)
 # --- Custom Louvain
 _, _, _, louvain_final_partition = louvain.run(print_results=False)
@@ -29,11 +37,17 @@ _, _, _, louvain_final_partition = louvain.run(print_results=False)
 # --- Leiden from community-igraph
 G_ig = ig.Graph.TupleList(processed_graph.edges(), directed=False)
 G_ig.vs["name"] = list(processed_graph.nodes())
+start_time = time.time()
 leiden_igraph_partition = leidenalg.find_partition(G_ig, leidenalg.ModularityVertexPartition)
 partition_leiden = {
     int(G_ig.vs[i]["name"]): cid
     for i, cid in enumerate(leiden_igraph_partition.membership)
 }
+end_time = time.time()
+elapsed = end_time - start_time
+print("=======================================================")
+print(f"Karate Club Network Leiden Community Time: {int(elapsed // 3600)}h {int((elapsed % 3600) // 60)}m {elapsed % 60:.4f}s")
+print("=======================================================")
 # --- Custom Leiden
 leiden = Ldn(processed_graph)
 _, _, _, leiden_final_partition = leiden.run(print_results=False)
