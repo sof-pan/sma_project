@@ -1,5 +1,3 @@
-C:\Users\mario\Desktop\sma\comm\brain_network_external.py:27: FutureWarning: The 'delim_whitespace' keyword in pd.read_csv is deprecated and will be removed in a future version. Use ``sep='\s+'`` instead
-  brain_df = pd.read_csv('datasets/bn-fly-drosophila_medulla_1.edges', delim_whitespace=True, comment='#', header=None, names=['source', 'target', 'weight'])
 Removed 0 edges with weight below 0.1.
 Removed 0 isolated nodes.
 Removed 14 outlier nodes with degree z-score above 3.0.

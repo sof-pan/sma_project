@@ -1,0 +1,68 @@
+Removed 0 edges with weight below 0.1.
+Removed 0 isolated nodes.
+Removed 0 outlier nodes with degree z-score above 5.
+No attributes specified for node missing values removal.
+No attributes specified for edge missing values removal.
+No unique attributes specified for duplicate nodes removal.
+No selected node attributes specified for feature selection.
+No selected edge attributes specified for feature selection.
+Feature selection completed: kept selected node and edge attributes only.
+Feature extraction completed: added degree and betweenness centrality.
+Sample fraction is 1.0, no sampling will be performed.
+Starting Louvain algorithm...
+=======================================================
+Time taken for Louvain: 0 hours, 0 minutes, 0.1043 seconds
+=======================================================
+Starting Leiden algorithm...
+=======================================================
+Time taken for Leiden: 0 hours, 0 minutes, 0.0813 seconds
+=======================================================
+Normalized Mutual Information (NMI) for Louvain: 0.5878
+CPM Score (gamma=0.5) for Louvain: 99.0000
+Normalized Mutual Information (NMI) for Leiden: 0.5942
+CPM Score (gamma=0.5) for Leiden: 89.5000
+Normalized Mutual Information (NMI) for Louvain NetworkX: 0.5823
+CPM Score (gamma=0.5) for Louvain NetworkX: 89.5000
+Normalized Mutual Information (NMI) for Leiden Community: 0.1291
+CPM Score (gamma=0.5) for Leiden Community: 51.0000
+=======================================================
+Detected communities for Louvain NetworkX: {2: [0, 4, 5, 6, 10, 11, 16, 17, 19, 21], 0: [1, 2, 3, 7, 12, 13], 3: [8, 9, 14, 15, 18, 20, 22, 26, 29, 30, 32, 33], 1: [23, 24, 25, 27, 28, 31]}
+=======================================================
+Detected communities for Leiden Community: {1: [0, 1, 2, 3, 7, 10, 11, 12, 13, 14, 15], 3: [4, 5, 6, 9, 22], 0: [8, 17, 18, 21, 23, 24, 25, 26, 27, 28, 31, 33], 2: [16, 19, 20, 29, 30, 32]}
+=======================================================
+Detected communities for Louvain:
+
+Final Community Assignments:
+Community 1: [4, 5, 6, 10, 16]
+Community 2: [0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21]
+Community 3: [8, 9, 14, 15, 18, 20, 22, 26, 29, 30, 32, 33]
+Community 4: [23, 24, 25, 27, 28, 31]
+
+Final Edge Weights:
+Edge (2, 2): Weight 69
+Edge (2, 1): Weight 11
+Edge (2, 3): Weight 16
+Edge (2, 4): Weight 6
+Edge (1, 1): Weight 19
+Edge (3, 3): Weight 59
+Edge (3, 4): Weight 26
+Edge (4, 4): Weight 25
+=======================================================
+Detected communities for Leiden:
+
+Final Community Assignments:
+Community 1: [4, 5, 6, 10, 16]
+Community 2: [0, 1, 2, 3, 7, 11, 12, 13, 17, 19, 21]
+Community 3: [8, 9, 14, 15, 18, 20, 22, 26, 29, 30, 32, 33]
+Community 4: [23, 24, 25, 27, 28, 31]
+
+Final Edge Weights:
+Edge (2, 2): Weight 69
+Edge (2, 1): Weight 11
+Edge (2, 3): Weight 16
+Edge (2, 4): Weight 6
+Edge (1, 1): Weight 19
+Edge (3, 3): Weight 59
+Edge (3, 4): Weight 26
+Edge (4, 4): Weight 25
+=======================================================
