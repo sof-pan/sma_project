@@ -21,7 +21,7 @@ import os
 def load_dataset_and_run():
     # Example usage
     # G = nx.karate_club_graph()
-    G = nx.les_miserables_graph()
+    # G = nx.les_miserables_graph()
     # G = nx.florentine_families_graph()
     # G = nx.erdos_renyi_graph(n=50, p=0.1)
     # G = nx.sudoku_graph(n=3)
@@ -31,8 +31,8 @@ def load_dataset_and_run():
     # G = nx.from_pandas_edgelist(df, "source", "target")
 
     # example = pd.read_csv("test_datasets/example.txt", sep=" ", names=["start_node", "end_node"])
-    # df = pd.read_csv('test_datasets/example.txt', header=None, sep=" ", names=['source', 'target'])
-    # G = nx.from_pandas_edgelist(df, "source", "target")
+    df = pd.read_csv('test_datasets/example.txt', header=None, sep=" ", names=['source', 'target'])
+    G = nx.from_pandas_edgelist(df, "source", "target")
 
     processed_graph = GraphPreprocessor(G).process()
 
