@@ -25,8 +25,8 @@ args = parser.parse_args()
 print("Start time:", time.strftime("%Y-%m-%d %H:%M:%S"))
 start_time = time.time()
 
-# Load the graph structure from edge list
-dataSet_df = pd.read_csv('datasets/com-youtube.ungraph.txt', sep=" ", comment='#', header=None, names=['source', 'target', 'weight'])
+# Load the graph structure from edge list [delim_whitespace=True : detecte automatically separator]
+dataSet_df = pd.read_csv('datasets/com-youtube.ungraph.txt', delim_whitespace=True, comment='#', header=None, names=['source', 'target', 'weight'])
 the_graph: nx.Graph = nx.from_pandas_edgelist(dataSet_df, 'source', 'target', edge_attr='weight')
 
 # Add weight to edges if it's not already there
