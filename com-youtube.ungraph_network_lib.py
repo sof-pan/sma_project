@@ -10,6 +10,10 @@ import json
 from matplotlib.patches import Patch
 from collections import defaultdict, Counter
 from sklearn.metrics import precision_score, recall_score, f1_score
+import random
+
+size_reduction_dataset = 1134890 # 1134890 = max number of vertex
+random_state = 42
 
 #compute cohesiveness_and_separateness for louvain and leiden
 def compute_cohesiveness_and_separateness(G, partition):
@@ -67,6 +71,13 @@ def dict_to_partition_communities(partition_dict):
 # Load the YouTube graph
 G = nx.read_edgelist('datasets/com-youtube.ungraph.txt', nodetype=int)
 
+#use pseudo random vertex
+random.seed(random_state)
+selected_nodes = random.sample(list(G.nodes), size_reduction_dataset)
+
+#create a sub graph with the selecte vertex
+G_sub = G.subgraph(selected_nodes).copy()
+
 # Load ground truth communities
 ground_truth = {}
 with open('datasets/com-youtube.all.cmty.txt', 'r') as f:
@@ -77,9 +88,9 @@ with open('datasets/com-youtube.all.cmty.txt', 'r') as f:
             ground_truth[int(node)] = community_id
 
 # Optional: limit graph to N nodes for visualization
-N = 100  # You can change this value to process more nodes (e.g., N = len(G.nodes) for full graph)
-selected_nodes = list(G.nodes)[:N]
-G_sub = G.subgraph(selected_nodes).copy()
+#N = 100  # You can change this value to process more nodes (e.g., N = len(G.nodes) for full graph)
+#selected_nodes = list(G.nodes)[:N]
+#G_sub = G.subgraph(selected_nodes).copy()
 
 # ---------------- Louvain algorithm -------------------------------------
 start_time = time.time()
@@ -150,6 +161,7 @@ gt_names = {
 }
 
 # Visualization
+''' #desactivted for performace 
 print("\nGenerating graph visualization...")
 
 # Assign colors
@@ -190,7 +202,7 @@ ax.axis('off')
 plt.tight_layout()
 plt.savefig("results/img/youtube_graph_louvaine.png", dpi=300)
 plt.show()
-
+'''
 # Prepare community sizes (number of nodes per detected community)
 community_sizes = list(Counter(partition.values()).values())
 
@@ -230,7 +242,7 @@ results = {
 os.makedirs("results", exist_ok=True)
 
 # Save the result to a unified JSON file
-with open("results/louvain_library_results_lib.json", "w") as f:
+with open("results/youtube_network_results_louvain_lib.json", "w") as f:
 
     json.dump(results, f, indent=4)
 
@@ -345,12 +357,12 @@ results_leiden = {
     }}
 
 # Save Leiden result to JSON
-with open("results/leiden_library_results_lib.json", "w") as f:
+with open("results/youtube_network_results_leiden__lib.json", "w") as f:
 
     json.dump(results_leiden, f, indent=4)
 
 # ---- Visualization for Leiden ----
-
+''' #desactiveted for performace
 print("\nGenerating graph visualization for Leiden...")
 
 # Assign colors
@@ -395,3 +407,4 @@ ax.axis('off')
 plt.tight_layout()
 plt.savefig("results/img/youtube_graph_leiden.png", dpi=300)
 plt.show()
+'''

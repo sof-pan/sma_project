@@ -12,6 +12,14 @@ import sys
 import os
 import json
 from collections import Counter
+import random
+
+random.seed(42)
+###(calculation with  50 000 take 11h27
+#for a 
+#Intel Core i5-4210M (2 physical cores, 4 threads, 2.6–3.2 GHz)
+# 64-bit L3 Cache 3 MiB, 16 GO Ram
+size_reduction_dataset = 1500 # take 47 min  /work only on one threads
 
 timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
 log_dir = os.path.join('logs', f"youtube_network_{timestamp}")
@@ -29,9 +37,11 @@ start_time = time.time()
 
 # Load the graph structure from edge list [sep =detecte automatically separator]
 dataSet_df = pd.read_csv('datasets/com-youtube.ungraph.txt', sep='\s+', comment='#', header=None, names=['source', 'target', 'weight'])
+dataSet_df = dataSet_df.sort_values(by=['source', 'target']).reset_index(drop=True)
 
 # Take only a part of the graph for test proposal 
-dataSet_df = dataSet_df.sample(n=20, random_state=42)
+#dataSet_df = dataSet_df.sample(size_reduction_dataset, random_state=42)
+dataSet_df = dataSet_df.head(size_reduction_dataset) #IA proposal to have the same random on differant machine
 
 the_graph: nx.Graph = nx.from_pandas_edgelist(dataSet_df, 'source', 'target', edge_attr='weight')
 
@@ -150,10 +160,10 @@ leiden_results = {
 }
 
 # save in a JSON format
-with open("results/youtube_network_results_louvain_scratch.json", "w") as f:
+with open("results/2youtube_network_results_louvain_scratch.json", "w") as f:
     json.dump(louvain_results, f, indent=4)
 
-with open("results/youtube_network_results_leiden_scratch.json", "w") as f:
+with open("results/2youtube_network_results_leiden_scratch.json", "w") as f:
     json.dump(leiden_results, f, indent=4)
 
 sys.stdout.close()
