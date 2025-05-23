@@ -83,5 +83,5 @@ louvain.print_final_community_assignments_and_edge_weights()
 print("=======================================================")
 
 print("Detected communities for Leiden:")
-louvain.print_final_community_assignments_and_edge_weights()
+leiden.print_final_community_assignments_and_edge_weights()
 print("=======================================================")
