@@ -90,9 +90,9 @@ modularity_time = [
 # --- Simulated community size data (graph 2)
 community_sizes = {
     ("Louvain", "Library"): louvain_library_data["community_sizes"],
-    ("Louvain", "From Scratch"): [30, 25, 20, 40, 60, 10, 5, 1, 1],
+    ("Louvain", "From Scratch"): louvain_scratch_data["community_sizes"],
     ("Leiden", "Library"): leiden_library_data["community_sizes"],
-    ("Leiden", "From Scratch"): [25, 20, 18, 30, 45, 3, 3, 2, 1]
+    ("Leiden", "From Scratch"): leiden_scratch_data["community_sizes"]
 }
 
 # transform louvaine library to a listn
@@ -103,9 +103,9 @@ leiden_partition_list = partition_dict_to_list(partitionLeidenLib)
 
 partitions = {
     "Louvain Library":        louvain_partition_list,
-    "Louvain From Scratch":   louvain_partition_list, #to remplace 
+   # "Louvain From Scratch":   louvain_partition_list, #to remplace but we dont have a partition for scratch version now 
     "Leiden Library":         leiden_partition_list,
-    "Leiden From Scratch":    louvain_partition_list #to remplace 
+   # "Leiden From Scratch":    louvain_partition_list #to remplace #to remplace but we dont have a partition for scratch version now
 }
 #
 # 
@@ -168,8 +168,7 @@ def plot_community_size_distribution(community_sizes):
     size_df = pd.DataFrame(records)
 
     plt.figure(figsize=(10, 6))
-    ax = sns.violinplot(x="Version", y="Community Size", hue="Algorithm", data=size_df,
-                        palette=custom_palette, split=True, inner="box")
+    ax = sns.stripplot(x="Version", y="Community Size", hue="Algorithm", data=size_df, palette=custom_palette)
     for artist in ax.findobj():
         if isinstance(artist, plt.Line2D):
             artist.set_linewidth(2)
@@ -179,6 +178,7 @@ def plot_community_size_distribution(community_sizes):
     plt.xlabel("Version")
     plt.legend(title="Algorithm", loc="upper right")
     plt.tight_layout()
+    #plt.text(0, 20, f'Louvain Library: μ={recallLouvaineLib:.1f}', bbox=dict(boxstyle="round"))
     plt.savefig("results/img/distribution of Community Sizes.png", dpi=300)
     plt.show()
 
