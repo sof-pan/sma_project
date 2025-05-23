@@ -12,7 +12,7 @@ from collections import defaultdict, Counter
 from sklearn.metrics import precision_score, recall_score, f1_score
 import random
 
-size_reduction_dataset = 1134890 # 1134890 = max number of vertex
+size_reduction_dataset = 2500 # 1134890 = max number of vertex
 random_state = 42
 
 #compute cohesiveness_and_separateness for louvain and leiden
