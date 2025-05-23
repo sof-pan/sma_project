@@ -1,5 +1,5 @@
 import networkx as nx
-#import community as community_louvain
+import community as community_louvain
 from sklearn.metrics import normalized_mutual_info_score
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,13 +10,62 @@ import json
 from matplotlib.patches import Patch
 from collections import defaultdict, Counter
 from sklearn.metrics import precision_score, recall_score, f1_score
-from networkx.algorithms.clique import find_cliques
-import igraph as ig
-import leidenalg
 
+#compute cohesiveness_and_separateness for louvain and leiden
+def compute_cohesiveness_and_separateness(G, partition):
+    cohesiveness_scores = []
+    separateness_scores = []
+
+    for community in partition:
+        subgraph = G.subgraph(community)
+        internal_edges = subgraph.number_of_edges()
+        cut_edges = sum(1 for node in community for neighbor in G.neighbors(node)
+                        if neighbor not in community) / 2  # / by 2 edges calculated 2x
+
+        cohesiveness = internal_edges / len(community) if len(community) > 0 else 0
+        separateness = internal_edges / (internal_edges + cut_edges) if (internal_edges + cut_edges) > 0 else 0
+
+        cohesiveness_scores.append(cohesiveness)
+        separateness_scores.append(separateness)
+
+    return np.mean(cohesiveness_scores), np.mean(separateness_scores)
+
+#compute cohesiveness_and_separateness for louvain and leiden (same fonction but for  igraph IA generated)
+def compute_cohesiveness_and_separateness_igraph(G, partition):
+    cohesiveness_scores = []
+    separateness_scores = []
+
+    for community in partition:
+        community_set = set(community)
+        internal_edges = 0
+        cut_edges = 0
+
+        for node in community:
+            neighbors = G.neighbors(node)
+            for neighbor in neighbors:
+                if neighbor in community_set:
+                    internal_edges += 1
+                else:
+                    cut_edges += 1
+
+        internal_edges = internal_edges // 2  # chaque arête interne est comptée deux fois
+        cohesiveness = internal_edges / len(community) if len(community) > 0 else 0
+        total_edges = internal_edges
+        separateness = internal_edges / total_edges if total_edges > 0 else 0
+
+        cohesiveness_scores.append(cohesiveness)
+        separateness_scores.append(separateness)
+
+    return np.mean(cohesiveness_scores), np.mean(separateness_scores)
+# IA proposal to resolve transform dic to sets
+def dict_to_partition_communities(partition_dict):
+    community_dict = defaultdict(set)
+    for node, community_id in partition_dict.items():
+        community_dict[community_id].add(node)
+    return list(community_dict.values())
 
 # Load the YouTube graph
-G = nx.read_edgelist('datasets/com-youtube.ungraph.txt')
+G = nx.read_edgelist('datasets/com-youtube.ungraph.txt', nodetype=int)
 
 # Load ground truth communities
 ground_truth = {}
@@ -29,29 +78,14 @@ with open('datasets/com-youtube.all.cmty.txt', 'r') as f:
 
 # Optional: limit graph to N nodes for visualization
 N = 100  # You can change this value to process more nodes (e.g., N = len(G.nodes) for full graph)
-#N = len(G.nodes)
 selected_nodes = list(G.nodes)[:N]
 G_sub = G.subgraph(selected_nodes).copy()
 
 # ---------------- Louvain algorithm -------------------------------------
-##Using IA for transform modularity to CPM for Louvain
 start_time = time.time()
-# Convert NetworkX to igraph for Louvain CPM
-G_igraph_louvain = ig.Graph(directed=False)
-G_igraph_louvain.add_vertices(list(G_sub.nodes()))
-G_igraph_louvain.add_edges(list(G_sub.edges()))
-
-partition_louvain_cpm = leidenalg.find_partition(G_igraph_louvain, 
-                                               leidenalg.CPMVertexPartition,
-                                               resolution_parameter=0.5)
+partition = community_louvain.best_partition(G_sub)
 exec_time = time.time() - start_time
-cpm_quality = partition_louvain_cpm.quality()
-
-# Convert back to dictionary format (like the original partition)
-partition = {}
-for comm_id, community in enumerate(partition_louvain_cpm):
-    for node in community:
-        partition[G_igraph_louvain.vs[node]["name"]] = comm_id
+modularity = community_louvain.modularity(partition, G_sub)
 
 # Prepare labels for NMI
 true_labels = []
@@ -68,8 +102,11 @@ valid_predicted_labels = [pred for label, pred in zip(true_labels, predicted_lab
 nmi = normalized_mutual_info_score(valid_true_labels, valid_predicted_labels) if valid_true_labels else float('nan')
 
 print(f"Execution time: {exec_time:.4f} seconds")
-print(f"CPM Quality: {cpm_quality:.4f}")
+print(f"Modularity: {modularity:.4f}")
 print(f"NMI: {nmi:.4f}")
+
+partition_as_sets = dict_to_partition_communities(partition)
+cohesiveness_louvain, separateness_louvain = compute_cohesiveness_and_separateness(G, partition_as_sets)
 
 # Optional: match detected Louvain communities with ground truth communities
 # This helps interpret what each Louvain community might represent
@@ -102,20 +139,19 @@ for lid, louvain_nodes in detected_coms.items():
               f"({max_overlap} overlapping nodes, {percent:.1f}%)")
 
 # Optional: provide symbolic names to some known ground truth communities
-# For interpretability only. mapping manually to a commnities
+# This is optional and for interpretability only. You can extend this mapping manually.
 gt_names = {
     13: "Gaming",
     2: "Music",
     42: "Comedy",
     8: "Education",
     27: "Sports"
-    #....
+    # Add more if needed
 }
 
 # Visualization
 print("\nGenerating graph visualization...")
-print("desactivated by MUM to save time remove # to generate visualization")
-'''
+
 # Assign colors
 num_coms = len(set(partition.values()))
 palette = sns.color_palette("hls", num_coms)
@@ -152,9 +188,9 @@ ax.legend(handles=legend_elements, loc='lower right', title='Communities (Louvai
 
 ax.axis('off')
 plt.tight_layout()
-plt.savefig("out/youtube_graph_louvaine.png", dpi=300)
+plt.savefig("results/img/youtube_graph_louvaine.png", dpi=300)
 plt.show()
-'''
+
 # Prepare community sizes (number of nodes per detected community)
 community_sizes = list(Counter(partition.values()).values())
 
@@ -174,10 +210,12 @@ if true_labels:
 else:
     precision = recall = f1 = float('nan')
 
-# Prepare the result dictionary louven
+# Prepare the result dictionary
 results = {
     "execution_time": exec_time,
-    "cpm": cpm_quality,
+    "cohesiveness": cohesiveness_louvain,
+    "separateness": separateness_louvain,
+    "modularity": modularity,
     "nmi": nmi,
     "community_sizes": community_sizes,
     "partition": partition,
@@ -193,6 +231,7 @@ os.makedirs("results", exist_ok=True)
 
 # Save the result to a unified JSON file
 with open("results/louvain_library_results_lib.json", "w") as f:
+
     json.dump(results, f, indent=4)
 
 # --------------------------- Leiden algorithm section ---------------------------
@@ -205,15 +244,21 @@ print("\nRunning Leiden algorithm...")
 
 G_igraph = ig.Graph(directed=False)
 G_igraph.add_vertices(list(G_sub.nodes()))
-G_igraph.add_edges(list(G_sub.edges()))
+
+node_list = list(G_sub.nodes())
+#Mapping node to index
+node_to_index = {node: idx for idx, node in enumerate(node_list)}
+#link 
+edges = [(node_to_index[u], node_to_index[v]) for u, v in G_sub.edges()]
+G_igraph.add_edges(edges)
+
+partition_leiden = leidenalg.find_partition(G_igraph, leidenalg.ModularityVertexPartition)
 
 # Apply Leiden algorithm
 start_time_leiden = time.time()
-partition_leiden = leidenalg.find_partition(G_igraph, 
-                                          leidenalg.CPMVertexPartition,
-                                          resolution_parameter=0.5)  # Param γ
-cpm_leiden = partition_leiden.quality()
+cohesiveness_leiden, separateness_leiden = compute_cohesiveness_and_separateness_igraph(G_igraph, partition_leiden)
 exec_time_leiden = time.time() - start_time_leiden
+modularity_leiden = partition_leiden.modularity
 
 # Build partition mapping: node -> community ID
 partition_leiden_dict = {}
@@ -236,8 +281,10 @@ valid_predicted_labels_leiden = [pred for label, pred in zip(true_labels_leiden,
 nmi_leiden = normalized_mutual_info_score(valid_true_labels_leiden, valid_predicted_labels_leiden) if valid_true_labels_leiden else float('nan')
 
 print(f"Execution time (Leiden): {exec_time_leiden:.4f} seconds")
-print(f"CPM Quality (Leiden): {cpm_leiden:.4f}")
+print(f"Modularity (Leiden): {modularity_leiden:.4f}")
 print(f"NMI (Leiden): {nmi_leiden:.4f}")
+
+partition_leiden = leidenalg.find_partition(G_igraph, leidenalg.ModularityVertexPartition)
 
 # Match Leiden communities to ground truth
 gt_coms_leiden = defaultdict(set)
@@ -285,7 +332,9 @@ else:
 # Prepare result dictionary for Leiden
 results_leiden = {
     "execution_time": exec_time_leiden,
-    "cpm": cpm_leiden,
+    "cohesiveness": cohesiveness_leiden,
+    "separateness": separateness_leiden,
+    "modularity": modularity_leiden,
     "nmi": nmi_leiden,
     "community_sizes": community_sizes_leiden,
     "partition": partition_leiden_dict,
@@ -293,18 +342,17 @@ results_leiden = {
         "Precision": precision_leiden,
         "Recall": recall_leiden,
         "F1-score": f1_leiden
-    }
-}
+    }}
 
 # Save Leiden result to JSON
 with open("results/leiden_library_results_lib.json", "w") as f:
+
     json.dump(results_leiden, f, indent=4)
 
 # ---- Visualization for Leiden ----
 
 print("\nGenerating graph visualization for Leiden...")
-print("desactivated by MUM to save time remove # to generate visualization")
-'''
+
 # Assign colors
 num_coms_leiden = len(set(partition_leiden_dict.values()))
 palette_leiden = sns.color_palette("Set2", num_coms_leiden)
@@ -326,21 +374,24 @@ for i, node in enumerate(G_sub.nodes()):
     ax.text(x, y, str(node), fontsize=8, ha='center', va='center', color='white', zorder=3)
 
 # Legend with GT interpretation (if available)
+unique_coms = sorted(set(partition_leiden_dict.values()))
+com_to_color_idx = {com: idx for idx, com in enumerate(unique_coms)}
+
 legend_elements_leiden = []
-for i in set(partition_leiden_dict.values()):
+for i in unique_coms:
     label = f"Community {i}"
     if i in leiden_to_gt:
         gt_id = leiden_to_gt[i]
         label += f" → GT {gt_id}"
         if gt_id in gt_names:
             label += f" ({gt_names[gt_id]})"
-    legend_elements_leiden.append(Patch(facecolor=palette_leiden[i], edgecolor='black', label=label))
+    color_idx = com_to_color_idx[i]
+    legend_elements_leiden.append(Patch(facecolor=palette_leiden[color_idx], edgecolor='black', label=label))
+
 
 ax.legend(handles=legend_elements_leiden, loc='lower right', title='Communities (Leiden)', fontsize=8)
 
 ax.axis('off')
 plt.tight_layout()
-plt.savefig("out/youtube_graph_leiden.png", dpi=300)
-
+plt.savefig("results/img/youtube_graph_leiden.png", dpi=300)
 plt.show()
-'''

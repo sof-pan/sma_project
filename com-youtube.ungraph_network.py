@@ -10,6 +10,8 @@ import evaluation
 import argparse
 import sys
 import os
+import json
+from collections import Counter
 
 timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
 log_dir = os.path.join('logs', f"youtube_network_{timestamp}")
@@ -29,7 +31,7 @@ start_time = time.time()
 dataSet_df = pd.read_csv('datasets/com-youtube.ungraph.txt', sep='\s+', comment='#', header=None, names=['source', 'target', 'weight'])
 
 # Take only a part of the graph for test proposal 
-dataSet_df = dataSet_df.sample(n=100, random_state=42)
+dataSet_df = dataSet_df.sample(n=20, random_state=42)
 
 the_graph: nx.Graph = nx.from_pandas_edgelist(dataSet_df, 'source', 'target', edge_attr='weight')
 
@@ -55,16 +57,21 @@ processor = GraphPreprocessor(
 the_graph_processed = processor.process()
 
 louvain = Lvn(the_graph_processed)
+start_louvain = time.time()
 louvain_original_G, louvain_G, louvain_partition, louvain_final_partition = louvain.run(print_results=False)
+louvain_time = time.time() - start_louvain
 
 leiden = Ldn(the_graph_processed)
+start_leiden = time.time()
 leiden_original_G, leiden_G, leiden_partition, leiden_final_partition = leiden.run(print_results=False)
+leiden_time = time.time() - start_leiden
 
 evaluation.evaluate_communities_without_ground_truth(louvain_G, louvain_final_partition, "Louvain")
 evaluation.evaluate_communities_without_ground_truth(leiden_G, leiden_partition, "Leiden")
 
-evaluation.evaluate_cpm(the_graph_processed, louvain_final_partition, "Louvain")
-evaluation.evaluate_cpm(the_graph_processed, leiden_final_partition, "Leiden")
+evaluation.evaluate_cpm(the_graph_processed, louvain_final_partition, method="Louvain")
+evaluation.evaluate_cpm(the_graph_processed, leiden_final_partition, method="Leiden")
+
 
 if args.export_graphs:
     louvain_exporter = Neo4jGraphExporter(label="LouvainNode")
@@ -81,9 +88,73 @@ elapsed_time = end_time - start_time
 hours = int(elapsed_time // 3600)
 minutes = int((elapsed_time % 3600) // 60)
 seconds = elapsed_time % 60
+louvain_elapsed_time = elapsed_time
 print("=======================================================")
 print(f"Total time for Brain Network: {hours} hours, {minutes} minutes, {seconds:.4f} seconds")
 print("=======================================================")
+
+
+
+
+# genarate a json file for louvain and one for leiden
+import json
+import os
+from collections import Counter
+from networkx.algorithms.community import modularity
+from collections import defaultdict
+
+# calculate the modularity (not from scrach)
+
+def partition_to_communities(partition_dict):
+    communities = defaultdict(set)
+    for node, comm_id in partition_dict.items():
+        communities[comm_id].add(node)
+    return list(communities.values())
+
+#  convert partition Louvain
+louvain_communities = partition_to_communities(louvain_final_partition)
+louvain_modularity = modularity(the_graph_processed, louvain_communities)
+
+# convert  partition Leiden
+leiden_communities = partition_to_communities(leiden_final_partition)
+leiden_modularity = modularity(the_graph_processed, leiden_communities)
+
+louvain_cohesiveness, louvain_separateness = evaluation.evaluate_communities_without_ground_truth(
+    the_graph_processed, louvain_final_partition, "Louvain"
+)
+leiden_cohesiveness, leiden_separateness = evaluation.evaluate_communities_without_ground_truth(
+    the_graph_processed, leiden_final_partition, "Leiden"
+)
+
+# compute the CPM
+louvain_cpm = evaluation.evaluate_cpm(the_graph_processed, louvain_final_partition, method="Louvain")
+leiden_cpm = evaluation.evaluate_cpm(the_graph_processed, leiden_final_partition, method="Leiden")
+
+# dictionnary with results
+louvain_results = {
+    "execution_time": louvain_time,
+    "cohesiveness": louvain_cohesiveness,
+    "separateness": louvain_separateness,
+    "modularity": louvain_modularity,
+    "cpm": louvain_cpm,
+    "community_sizes": sorted(Counter(louvain_final_partition.values()).values(), reverse=True)
+}
+
+leiden_results = {
+    "execution_time": leiden_time,
+    "cohesiveness": leiden_cohesiveness,
+    "separateness": leiden_separateness,
+    "modularity": leiden_modularity,
+    "cpm": leiden_cpm,
+    "community_sizes": sorted(Counter(leiden_final_partition.values()).values(), reverse=True)
+}
+
+# save in a JSON format
+with open("results/youtube_network_results_louvain_scratch.json", "w") as f:
+    json.dump(louvain_results, f, indent=4)
+
+with open("results/youtube_network_results_leiden_scratch.json", "w") as f:
+    json.dump(leiden_results, f, indent=4)
 
 sys.stdout.close()
 sys.stdout = sys.__stdout__
