@@ -8,6 +8,7 @@ from preprocessing import GraphPreprocessor
 import igraph as ig
 import leidenalg
 import time
+# from neo4j import GraphDatabase
 
 # Load sample graph with ground truth (karate club)
 G: nx.Graph = nx.karate_club_graph()
@@ -20,6 +21,20 @@ for node in G.nodes():
     true_labels.append(club_to_int[G.nodes[node]['club']])
 
 processed_graph = GraphPreprocessor(G, z_threshold=5).process()
+
+# URI = "bolt://localhost:7687"
+# AUTH = ("neo4j", "test1234")
+# driver = GraphDatabase.driver(URI, auth=AUTH)
+
+# with driver.session() as session:
+#     for node in G.nodes():
+#         session.run("MERGE (n:Node {id: $id})", id=node)
+        
+#     for u, v in G.edges():
+#         session.run("""
+#             MATCH (n1:Node {id: $u}), (n2:Node {id: $v})
+#             MERGE (n1)-[:CONNECTED_TO]->(n2)
+#         """, u=u, v=v)
 
 # --- Louvain from NetworkX
 start_time = time.time()
@@ -51,6 +66,12 @@ print("=======================================================")
 # --- Custom Leiden
 leiden = Ldn(processed_graph)
 _, _, _, leiden_final_partition = leiden.run(print_results=False)
+
+# with driver.session() as session:
+#     for node, community in louvain_final_partition.items():
+#         label = f"community_{community}"
+#         query = f"MATCH (n:Node {{id: {node}}}) SET n:{label}"
+#         session.run(query)
 
 node_labels = {node: club_to_int[G.nodes[node]['club']] for node in G.nodes()}
 evaluation.evaluate_communities_with_ground_truth(louvain_final_partition, node_labels, "Louvain")
